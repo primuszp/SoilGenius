@@ -39,8 +39,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IO\MultiensayoReader.cs" />
+    <Compile Include="IO\TxtReader.cs" />
     <Compile Include="Model\CbrSample.cs" />
     <Compile Include="Model\ControlVariableEnum.cs" />
+    <Compile Include="Model\TestPoint2d.cs" />
     <Compile Include="Model\TestPoint.cs" />
     <Compile Include="Model\TestSample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
