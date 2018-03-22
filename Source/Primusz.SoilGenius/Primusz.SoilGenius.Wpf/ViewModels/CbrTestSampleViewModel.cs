@@ -4,9 +4,9 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Annotations;
-using Caliburn.Micro;
 using netDxf;
 using netDxf.Entities;
+using Caliburn.Micro;
 using Primusz.SoilGenius.Core.Model;
 
 namespace Primusz.SoilGenius.Wpf.ViewModels
@@ -15,30 +15,87 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
     {
         #region Members
 
-        private CbrTestSample model;
-        private DataPoint prevPoint;
-        private DataPoint currPoint;
+        private LineAnnotation la;
+        private CbrTestData model;
+        private bool adjustZeroPoint;
 
         #endregion
 
         #region Properties
 
-        public PlotModel CbrPlotModel { get; private set; }
+        public double Slope
+        {
+            get { return la.Slope; }
+            set
+            {
+                la.Slope = value;
+                PlotModel.InvalidatePlot(false);
+                NotifyOfPropertyChange(() => Slope);
+                NotifyOfPropertyChange(() => ZeroPoint);
+            }
+        }
+
+        public double Intercept
+        {
+            get { return la.Intercept; }
+            set
+            {
+                la.Intercept = value;
+                PlotModel.InvalidatePlot(false);
+                NotifyOfPropertyChange(() => Intercept);
+                NotifyOfPropertyChange(() => ZeroPoint);
+            }
+        }
+
+        public double ZeroPoint
+        {
+            get
+            {
+                if (AdjustZeroPoint)
+                {
+                    return -Intercept / Slope;
+                }
+                return 0.0d;
+            }
+        }
+
+        public bool AdjustZeroPoint
+        {
+            get { return adjustZeroPoint; }
+            set
+            {
+                if (value != adjustZeroPoint)
+                {
+                    adjustZeroPoint = value;
+
+                    if (adjustZeroPoint)
+                        PlotModel.Annotations.Add(la);
+                    else
+                        PlotModel.Annotations.Remove(la);
+
+                    PlotModel.InvalidatePlot(false);
+                    NotifyOfPropertyChange(() => ZeroPoint);
+                    NotifyOfPropertyChange(() => AdjustZeroPoint);
+                }
+            }
+        }
+
+        public PlotModel PlotModel { get; private set; }
 
         #endregion
 
-        public CbrTestSampleViewModel(CbrTestSample sample)
+        public CbrTestSampleViewModel(CbrTestData sample)
         {
             SetupPlotModel(sample);
         }
 
-        private void SetupPlotModel(CbrTestSample sample)
+        private void SetupPlotModel(CbrTestData sample)
         {
             model = sample;
 
             OxyColor color = OxyColor.FromArgb(100, 255, 255, 255);
 
-            CbrPlotModel = new PlotModel
+            PlotModel = new PlotModel
             {
                 Title = "CBR%",
                 TextColor = OxyColors.White,
@@ -47,9 +104,9 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 Background = OxyColor.FromArgb(50, 255, 255, 255)
             };
 
-            LinearAxis left = new LinearAxis()
+            LinearAxis left = new LinearAxis
             {
-                Title = "Erők (kN)",
+                Title = "Erő [kN]",
                 TicklineColor = color,
                 Position = AxisPosition.Left,
                 MajorGridlineStyle = LineStyle.Solid,
@@ -57,9 +114,9 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 TickStyle = TickStyle.Outside
             };
 
-            LinearAxis bottom = new LinearAxis()
+            LinearAxis bottom = new LinearAxis
             {
-                Title = "Elmozdulás (mm)",
+                Title = "Elmozdulás [mm]",
                 TicklineColor = color,
                 Position = AxisPosition.Bottom,
                 MajorGridlineStyle = LineStyle.Solid,
@@ -67,60 +124,60 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 TickStyle = TickStyle.Outside
             };
 
-            ScatterSeries series = new ScatterSeries()
+            ScatterSeries series = new ScatterSeries
             {
                 MarkerType = MarkerType.Circle,
-                MarkerStrokeThickness = 0,
+                MarkerStrokeThickness = 1,
                 MarkerFill = OxyColors.Red,
-                MarkerSize = 2
+                MarkerStroke = OxyColors.Black,
+                MarkerSize = 4
             };
 
-            foreach (TestPoint point in model.TestPoints)
+            foreach (CbrTestPoint point in model.TestPoints)
             {
-                series.Points.Add(new ScatterPoint(point.Stroke, point.Force));
+                series.Points.Add(new ScatterPoint(point.Penetration, point.Force));
             }
 
-            LineSeries line = SplineFitting(model.TestPoints, 0.1);
+            LineSeries line = SplineFitting(model.TestPoints, 0.2);
             line.Color = OxyColors.Green;
 
-            CbrPlotModel.Axes.Add(left);
-            CbrPlotModel.Axes.Add(bottom);
-            CbrPlotModel.Series.Add(series);
-            CbrPlotModel.Series.Add(line);
+            PlotModel.Axes.Add(left);
+            PlotModel.Axes.Add(bottom);
+            PlotModel.Series.Add(series);
+            PlotModel.Series.Add(line);
 
 
-            var la = new LineAnnotation { Type = LineAnnotationType.LinearEquation, Slope = 2, Intercept = 2};
+            la = new LineAnnotation
+            {
+                Type = LineAnnotationType.LinearEquation,
+                StrokeThickness = 2, Slope = 2.0, Intercept = 2.0
+            };
 
             la.MouseDown += (s, e) =>
             {
                 if (e.ChangedButton == OxyMouseButton.Left)
                 {
-                    prevPoint = la.InverseTransform(e.Position);
-
-                    la.StrokeThickness *= 5;
-                    CbrPlotModel.InvalidatePlot(false);
+                    la.StrokeThickness *= 2;
+                    PlotModel.InvalidatePlot(false);
                     e.Handled = true;
                 }
             };
 
-            // Handle mouse movements (note: this is only called when the mousedown event was handled)
             la.MouseMove += (s, e) =>
             {
-                currPoint = la.InverseTransform(e.Position);
-                la.Intercept = currPoint.Y - currPoint.X * la.Slope;
+                var currPoint = la.InverseTransform(e.Position);
+                Intercept = currPoint.Y - currPoint.X * la.Slope;
 
-                CbrPlotModel.InvalidatePlot(false);
+                PlotModel.InvalidatePlot(false);
                 e.Handled = true;
             };
 
             la.MouseUp += (s, e) =>
             {
-                la.StrokeThickness /= 5;
-                CbrPlotModel.InvalidatePlot(false);
+                la.StrokeThickness /= 2;
+                PlotModel.InvalidatePlot(false);
                 e.Handled = true;
             };
-
-            CbrPlotModel.Annotations.Add(la);
         }
 
         public void Save(string fileName)
@@ -129,7 +186,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             ExportToDxf(line, fileName);
         }
 
-        private LineSeries SplineFitting(IList<TestPoint> points, double step)
+        private LineSeries SplineFitting(IList<CbrTestPoint> points, double step)
         {
             LineSeries series = new LineSeries();
 
@@ -140,13 +197,13 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
             for (int i = 0; i < points.Count; i++)
             {
-                x[i] = points[i].Stroke;
+                x[i] = points[i].Penetration;
                 y[i] = points[i].Force;
 
                 if (x[i] > maximum) maximum = x[i];
             }
 
-            Math.Spline spline = new Math.Spline { X = x, Y = y, Rho = 1, Nodes = 300 };
+            Math.Spline spline = new Math.Spline { X = x, Y = y, Rho = 2, Nodes = 30 };
 
             if (points.Count > 0)
 
@@ -168,7 +225,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
             foreach (var p in series.Points)
             {
-                polyline.Vertexes.Add(new LwPolylineVertex(10*p.X, 10*p.Y));
+                polyline.Vertexes.Add(new LwPolylineVertex(10 * p.X, 10 * p.Y));
             }
 
             dxf.AddEntity(polyline);

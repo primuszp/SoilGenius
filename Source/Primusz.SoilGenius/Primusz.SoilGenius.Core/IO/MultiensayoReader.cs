@@ -38,9 +38,9 @@ namespace Primusz.SoilGenius.Core.IO
 
         #region Methods
 
-        public CbrTestSample Read()
+        public CbrTestData Read()
         {
-            CbrTestSample sample = new CbrTestSample();
+            CbrTestData sample = new CbrTestData();
 
             while (!reader.EndOfStream)
             {
@@ -51,8 +51,8 @@ namespace Primusz.SoilGenius.Core.IO
                     if (line.Contains("Speed:"))
                         sample.ControlSpeed = ParseDoubleTextRow(line, "mm/min");
 
-                    if (line.Contains("Sampling interval:"))
-                        sample.SamplingInterval = ParseDoubleTextRow(line, "s");
+                    //if (line.Contains("Sampling interval:"))
+                    //    sample.SamplingInterval = ParseDoubleTextRow(line, "s");
 
                     if (line.Contains("Upper force limit:"))
                         UpperForceLimit = ParseDoubleTextRow(line, "kN");
@@ -66,8 +66,8 @@ namespace Primusz.SoilGenius.Core.IO
                     if (line.Contains("Lower stroke limit:"))
                         LowerStrokeLimit = ParseDoubleTextRow(line, "mm");
 
-                    if (line.Contains("Control variable:"))
-                        sample.ControlVariable = ParseControlVariableTextRow(line);
+                    //if (line.Contains("Control variable:"))
+                    //    sample.ControlVariable = ParseControlVariableTextRow(line);
 
                     if (line == "Number;Time (s);Force (N);Stroke (mm);Strain (mm)")
                     {
@@ -75,7 +75,7 @@ namespace Primusz.SoilGenius.Core.IO
                         while (row != "Final de los datos adquiridos en el ensayo")
                         {
                             var point = ParseTestPointTextRow(row);
-                            sample.TestPoints.Add(point);
+                            //sample.TestPoints.Add(point);
                             row = reader.ReadLine();
                         }
                     }

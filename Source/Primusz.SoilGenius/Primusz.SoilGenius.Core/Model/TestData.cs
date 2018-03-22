@@ -2,7 +2,7 @@
 
 namespace Primusz.SoilGenius.Core.Model
 {
-    public abstract class TestSample
+    public abstract class TestData
     {
         public Guid Id { get; }
 
@@ -10,11 +10,9 @@ namespace Primusz.SoilGenius.Core.Model
 
         public string Operator { get; set; }
 
-        public double Diameter { get; set; }
-
         public DateTime DateTime { get; set; }
 
-        protected TestSample()
+        protected TestData()
         {
             Id = Guid.NewGuid();
             DateTime = DateTime.UtcNow;

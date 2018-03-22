@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Primusz.SoilGenius.Wpf</RootNamespace>
     <AssemblyName>Primusz.SoilGenius.Wpf</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -91,7 +91,7 @@
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="ViewModels\CbrTestSampleView.cs" />
+    <Compile Include="ViewModels\CbrTestSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -148,13 +148,15 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Primusz.SoilGenius.Core\Primusz.SoilGenius.Core.csproj">
-      <Project>{732078e6-1740-4625-b0ca-b79b48b62659}</Project>
-      <Name>Primusz.SoilGenius.Core</Name>
-    </ProjectReference>
+    <None Include="AD-2-12-1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="AD-2-12-1.txt" />
+    <ProjectReference Include="..\Primusz.SoilGenius.Core\Primusz.SoilGenius.Core.xproj">
+      <Project>{d0a9d043-7e5a-4696-9d18-e2855ea4f19c}</Project>
+      <Name>Primusz.SoilGenius.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
