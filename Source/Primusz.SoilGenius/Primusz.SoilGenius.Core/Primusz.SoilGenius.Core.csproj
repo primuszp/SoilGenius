@@ -50,6 +50,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IO\DataReader.cs" />
     <Compile Include="IO\MultiensayoReader.cs" />
+    <Compile Include="Numerics\Spline.cs" />
     <Compile Include="Model\CBRTestData.cs" />
     <Compile Include="Model\CbrTestPoint.cs" />
     <Compile Include="Model\ControlVariableEnum.cs" />

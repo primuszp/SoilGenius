@@ -4,10 +4,11 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Annotations;
-using netDxf;
-using netDxf.Entities;
+//using netDxf;
+//using netDxf.Entities;
 using Caliburn.Micro;
 using Primusz.SoilGenius.Core.Model;
+using Primusz.SoilGenius.Core.Numerics;
 
 namespace Primusz.SoilGenius.Wpf.ViewModels
 {
@@ -138,7 +139,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 series.Points.Add(new ScatterPoint(point.Penetration, point.Force));
             }
 
-            LineSeries line = SplineFitting(model.TestPoints, 0.2);
+            LineSeries line = SplineFitting(model.TestPoints, 0.100d);
             line.Color = OxyColors.Green;
 
             PlotModel.Axes.Add(left);
@@ -150,7 +151,9 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             la = new LineAnnotation
             {
                 Type = LineAnnotationType.LinearEquation,
-                StrokeThickness = 2, Slope = 2.0, Intercept = 2.0
+                StrokeThickness = 2,
+                Slope = 2.0,
+                Intercept = 2.0
             };
 
             la.MouseDown += (s, e) =>
@@ -183,54 +186,54 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         public void Save(string fileName)
         {
             LineSeries line = SplineFitting(model.TestPoints, 0.1);
-            ExportToDxf(line, fileName);
+            //ExportToDxf(line, fileName);
         }
 
         private LineSeries SplineFitting(IList<CbrTestPoint> points, double step)
         {
+            double maximum = 0;
             LineSeries series = new LineSeries();
 
             double[] x = new double[points.Count];
             double[] y = new double[points.Count];
 
-            double maximum = 0;
-
-            for (int i = 0; i < points.Count; i++)
+            for (var i = 0; i < points.Count; i++)
             {
                 x[i] = points[i].Penetration;
                 y[i] = points[i].Force;
 
-                if (x[i] > maximum) maximum = x[i];
+                if (x[i] >= maximum) maximum = x[i];
             }
 
-            Math.Spline spline = new Math.Spline { X = x, Y = y, Rho = 2, Nodes = 30 };
+            Spline spline = new Spline { X = x, Y = y, Rho = 2, Nodes = 30 };
 
             if (points.Count > 0)
-
-                if (spline.DataFitting())
+            {
+                if (spline.CurveFitting())
                 {
                     for (double i = 0; i <= maximum; i += step)
                     {
                         series.Points.Add(new DataPoint(i, spline.Calculation(i)));
                     }
                 }
+            }
 
             return series;
         }
 
-        private void ExportToDxf(LineSeries series, string fileName)
-        {
-            DxfDocument dxf = new DxfDocument();
-            LwPolyline polyline = new LwPolyline();
+        //private void ExportToDxf(LineSeries series, string fileName)
+        //{
+        //    DxfDocument dxf = new DxfDocument();
+        //    LwPolyline polyline = new LwPolyline();
 
-            foreach (var p in series.Points)
-            {
-                polyline.Vertexes.Add(new LwPolylineVertex(10 * p.X, 10 * p.Y));
-            }
+        //    foreach (var p in series.Points)
+        //    {
+        //        polyline.Vertexes.Add(new LwPolylineVertex(10 * p.X, 10 * p.Y));
+        //    }
 
-            dxf.AddEntity(polyline);
-            dxf.Save(fileName);
-        }
+        //    dxf.AddEntity(polyline);
+        //    dxf.Save(fileName);
+        //}
 
         private void ExportSeries(LineSeries series, string fileName)
         {

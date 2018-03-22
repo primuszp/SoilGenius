@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Primusz.SoilGenius.Wpf.Math
+﻿namespace Primusz.SoilGenius.Core.Numerics
 {
     public class Spline
     {
@@ -41,25 +39,20 @@ namespace Primusz.SoilGenius.Wpf.Math
 
         #region Methods
 
-        public bool DataFitting()
+        public bool CurveFitting()
         {
-            int info = 0;
+            var info = 0;
 
             if (X != null && Y != null)
                 alglib.spline1dfitpenalized(X, Y, Nodes, Rho, out info, out spline, out report);
 
             // EXPECTED: 1
-            if (info == 1) return true;
-
-            return false;
+            return info == 1;
         }
 
         public double Calculation(double x)
         {
-            if (spline != null)
-                return alglib.spline1dcalc(spline, x);
-
-            return 0.0;
+            return spline != null ? alglib.spline1dcalc(spline, x) : 0.0;
         }
 
         #endregion
