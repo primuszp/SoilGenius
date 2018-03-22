@@ -34,9 +34,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Alglibnet\alglibinternal.cs" />
+    <Compile Include="Alglibnet\alglibmisc.cs" />
+    <Compile Include="Alglibnet\ap.cs" />
+    <Compile Include="Alglibnet\dataanalysis.cs" />
+    <Compile Include="Alglibnet\diffequations.cs" />
+    <Compile Include="Alglibnet\fasttransforms.cs" />
+    <Compile Include="Alglibnet\integration.cs" />
+    <Compile Include="Alglibnet\interpolation.cs" />
+    <Compile Include="Alglibnet\linalg.cs" />
+    <Compile Include="Alglibnet\optimization.cs" />
+    <Compile Include="Alglibnet\solvers.cs" />
+    <Compile Include="Alglibnet\specialfunctions.cs" />
+    <Compile Include="Alglibnet\statistics.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IO\DataReader.cs" />
     <Compile Include="IO\MultiensayoReader.cs" />
@@ -60,6 +70,19 @@
     <Compile Include="System\System.Data\EnumerableExtensions.cs" />
     <Compile Include="System\System.Data\IDataReader.cs" />
     <Compile Include="System\System.Data\IDataRecord.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PCLExt.Thread, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCLExt.Thread.1.0.5\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLExt.Thread.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PCLExt.Thread.Abstractions, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCLExt.Thread.1.0.5\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLExt.Thread.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
