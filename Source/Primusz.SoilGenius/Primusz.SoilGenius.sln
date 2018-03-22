@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primusz.SoilGenius.Wpf", "Primusz.SoilGenius.Wpf\Primusz.SoilGenius.Wpf.csproj", "{66673A10-A73B-43DA-A643-BE315C96DCDE}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Primusz.SoilGenius.Core", "Primusz.SoilGenius.Core\Primusz.SoilGenius.Core.xproj", "{D0A9D043-7E5A-4696-9D18-E2855EA4F19C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primusz.SoilGenius.Core", "Primusz.SoilGenius.Core\Primusz.SoilGenius.Core.csproj", "{01FACED4-3D5B-4154-86D7-F81DC01AF979}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{66673A10-A73B-43DA-A643-BE315C96DCDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66673A10-A73B-43DA-A643-BE315C96DCDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66673A10-A73B-43DA-A643-BE315C96DCDE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0A9D043-7E5A-4696-9D18-E2855EA4F19C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0A9D043-7E5A-4696-9D18-E2855EA4F19C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0A9D043-7E5A-4696-9D18-E2855EA4F19C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0A9D043-7E5A-4696-9D18-E2855EA4F19C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01FACED4-3D5B-4154-86D7-F81DC01AF979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01FACED4-3D5B-4154-86D7-F81DC01AF979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01FACED4-3D5B-4154-86D7-F81DC01AF979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01FACED4-3D5B-4154-86D7-F81DC01AF979}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

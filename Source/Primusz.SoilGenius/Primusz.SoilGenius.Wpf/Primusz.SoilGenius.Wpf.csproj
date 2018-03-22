@@ -35,8 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="alglibnet2">
-      <HintPath>..\packages\Alglib.3.9.0\alglibnet2.dll</HintPath>
+    <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\alglibnet2.0.0.0\lib\alglibnet2.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
@@ -153,8 +154,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Primusz.SoilGenius.Core\Primusz.SoilGenius.Core.xproj">
-      <Project>{d0a9d043-7e5a-4696-9d18-e2855ea4f19c}</Project>
+    <ProjectReference Include="..\Primusz.SoilGenius.Core\Primusz.SoilGenius.Core.csproj">
+      <Project>{01faced4-3d5b-4154-86d7-f81dc01af979}</Project>
       <Name>Primusz.SoilGenius.Core</Name>
     </ProjectReference>
   </ItemGroup>
