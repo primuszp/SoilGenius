@@ -11,9 +11,9 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel>
-            <Border>
-                <StackPanel Margin="10, 0, 10, 0">
+        <StackPanel Margin="10 0 10 0">
+            <Border BorderThickness="2" BorderBrush="{StaticResource ListBorder}" Padding="5" CornerRadius="5">
+                <StackPanel>
                     <Border Background="{StaticResource NormalBrush}" Padding="5">
                         <StackPanel Orientation="Horizontal">
                             <CheckBox x:Name="CheckBox" IsChecked="{Binding AdjustZeroPoint, Mode=TwoWay}"
@@ -51,6 +51,43 @@
                         </StackPanel>
                     </Border>
 
+                </StackPanel>
+            </Border>
+
+            <Border Height="10"/>
+
+            <Border BorderThickness="2" BorderBrush="{StaticResource ListBorder}" Padding="5" CornerRadius="5">
+                <StackPanel>
+                    <Border Background="{StaticResource NormalBrush}" Padding="5">
+                        <TextBlock Text="Spline görbe" FontWeight="Bold" Margin="5,0,0,0" FontSize="14" Foreground="White" VerticalAlignment="Center"/>
+                    </Border>
+
+                    <Border Height="5"/>
+
+                    <Border Background="{StaticResource NormalBrush}" Padding="5">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Rho (simaság):" FontSize="14" Foreground="White" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Value, ElementName=RhoSlider, StringFormat={}{0:0.00}}" Margin="5,0,0,0"
+                                           FontSize="14" Foreground="White" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Slider x:Name="RhoSlider" Value="{Binding Rho, Mode=TwoWay}" Minimum="-5" Maximum="10" Margin="0,5,0,5"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Height="5"/>
+
+                    <Border Background="{StaticResource NormalBrush}" Padding="5">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Csomópontok (nodes):" FontSize="14" Foreground="White" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Value, ElementName=NodesSlider, StringFormat={}{0:0.00}}" Margin="5,0,0,0"
+                                           FontSize="14" Foreground="White" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Slider x:Name="NodesSlider" Value="{Binding Nodes, Mode=TwoWay}" Margin="0,5,0,5"
+                                    IsSnapToTickEnabled="True" TickFrequency="1" Minimum="5" Maximum="100"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </Border>
         </StackPanel>

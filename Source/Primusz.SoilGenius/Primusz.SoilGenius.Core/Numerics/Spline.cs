@@ -39,7 +39,7 @@
 
         #region Methods
 
-        public bool CurveFitting()
+        public bool Fit()
         {
             var info = 0;
 

@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System;
+using System.IO;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -16,8 +16,12 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
     {
         #region Members
 
+        private LineSeries spline;
         private LineAnnotation la;
         private CbrTestData model;
+
+        private int nodes = 50;
+        private double rho = 2;
         private bool adjustZeroPoint;
 
         #endregion
@@ -57,6 +61,34 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                     return -Intercept / Slope;
                 }
                 return 0.0d;
+            }
+        }
+
+        public double Rho
+        {
+            get { return rho; }
+            set
+            {
+                if (Math.Abs(value - rho) > double.Epsilon)
+                {
+                    rho = value;
+                    SplineCurve();
+                    NotifyOfPropertyChange(() => Rho);
+                }
+            }
+        }
+
+        public int Nodes
+        {
+            get { return nodes; }
+            set
+            {
+                if (value != nodes)
+                {
+                    nodes = value;
+                    SplineCurve();
+                    NotifyOfPropertyChange(() => Nodes);
+                }
             }
         }
 
@@ -139,14 +171,12 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 series.Points.Add(new ScatterPoint(point.Penetration, point.Force));
             }
 
-            LineSeries line = SplineFitting(model.TestPoints, 0.100d);
-            line.Color = OxyColors.Green;
+            SplineCurve();
 
             PlotModel.Axes.Add(left);
             PlotModel.Axes.Add(bottom);
             PlotModel.Series.Add(series);
-            PlotModel.Series.Add(line);
-
+            PlotModel.Series.Add(spline);
 
             la = new LineAnnotation
             {
@@ -185,40 +215,46 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public void Save(string fileName)
         {
-            LineSeries line = SplineFitting(model.TestPoints, 0.1);
+            //LineSeries line = SplineCurve(model.TestPoints, 0.1);
             //ExportToDxf(line, fileName);
         }
 
-        private LineSeries SplineFitting(IList<CbrTestPoint> points, double step)
+
+        private void SplineCurve(double step = 0.0025d)
         {
+            if (spline == null)
+                spline = new LineSeries { Smooth = false };
+
             double maximum = 0;
-            LineSeries series = new LineSeries();
 
-            double[] x = new double[points.Count];
-            double[] y = new double[points.Count];
+            double[] x = new double[model.TestPoints.Count];
+            double[] y = new double[model.TestPoints.Count];
 
-            for (var i = 0; i < points.Count; i++)
+            for (var i = 0; i < model.TestPoints.Count; i++)
             {
-                x[i] = points[i].Penetration;
-                y[i] = points[i].Force;
+                x[i] = model.TestPoints[i].Penetration;
+                y[i] = model.TestPoints[i].Force;
 
                 if (x[i] >= maximum) maximum = x[i];
             }
 
-            Spline spline = new Spline { X = x, Y = y, Rho = 2, Nodes = 30 };
+            var curve = new Spline { X = x, Y = y, Rho = Rho, Nodes = Nodes };
 
-            if (points.Count > 0)
+            if (model.TestPoints.Count > 0)
             {
-                if (spline.CurveFitting())
+                if (curve.Fit())
                 {
+                    spline.Points.Clear();
+                    spline.Color = OxyColors.Green;
+
                     for (double i = 0; i <= maximum; i += step)
                     {
-                        series.Points.Add(new DataPoint(i, spline.Calculation(i)));
+                        spline.Points.Add(new DataPoint(i, curve.Calculation(i)));
                     }
+
+                    PlotModel.InvalidatePlot(true);
                 }
             }
-
-            return series;
         }
 
         //private void ExportToDxf(LineSeries series, string fileName)
