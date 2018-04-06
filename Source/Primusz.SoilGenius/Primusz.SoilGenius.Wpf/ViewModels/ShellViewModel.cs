@@ -36,7 +36,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public ShellViewModel(IEventAggregator aggregator)
         {
-            ActiveViewModel = new CbrTestSampleViewModel(new CbrTestData());
+            ActiveViewModel = new CbrTestViewModel();
 
             if (aggregator != null)
             {
@@ -61,33 +61,25 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             //    }
             //}
 
-            using (FileStream stream = File.Open("AD-2-12-1.txt", FileMode.Open))
+            XmlProjectReader reader = new XmlProjectReader();
+            var list = reader.Read(File.Open(@"DataSet/cbr_project.xml", FileMode.Open));
+
+            var vm = ActiveViewModel as CbrTestViewModel;
+
+            foreach (var test in list)
             {
-                using (DataReader reader = new DataReader(stream))
-                {
-                    if (reader.Read())
-                    {
-                        CbrTestData data = new CbrTestData();
+                string path = Path.Combine("DataSet", test.File);
+                test.LoadTestFile(File.Open(path, FileMode.Open));
 
-                        foreach (var row in reader.GetRows())
-                        {
-                            double x = row[0].ToDouble();
-                            double y = row[1].ToDouble();
-
-                            data.TestPoints.Add(new CbrTestPoint { Penetration = x, Force = y });
-                        }
-
-                        ActiveViewModel = new CbrTestSampleViewModel(data);
-                    }
-                }
+                vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
             }
         }
 
-        public void SaveTestData()
-        {
-            CbrTestSampleViewModel vm = ActiveViewModel as CbrTestSampleViewModel;
-            vm?.Save(@"X:\CBR\cbr1.dxf");
-        }
+        //public void SaveTestData()
+        //{
+        //    CbrTestViewModel vm = ActiveViewModel as CbrTestViewModel;
+        //    vm?.Save(@"X:\CBR\cbr1.dxf");
+        //}
 
         protected override void OnInitialize()
         {

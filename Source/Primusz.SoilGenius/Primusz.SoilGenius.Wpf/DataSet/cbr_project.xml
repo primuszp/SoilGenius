@@ -1,0 +1,10 @@
+<Project>
+  <Directory Name="Adony">
+    <TestData Name="CBR" Operator="SOE" Standard="MSZ EN 13286-47" ControlSpeed="1.27">
+      <TestPoints File="AD-2-12-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="12%" Time="1h"/>
+      <TestPoints File="AD-2-15-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="15%" Time="1h"/>
+      <TestPoints File="AD-2-18-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="18%" Time="1h"/>
+      <TestPoints File="AD-2-21-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="21%" Time="1h"/>
+    </TestData>
+  </Directory>
+</Project>

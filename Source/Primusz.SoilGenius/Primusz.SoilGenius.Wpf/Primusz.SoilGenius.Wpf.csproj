@@ -86,16 +86,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Abstractions\ITestPlot.cs" />
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="ViewModels\CbrTestSampleViewModel.cs" />
+    <Compile Include="ViewModels\CbrTestDataViewModel.cs" />
+    <Compile Include="ViewModels\CbrTestViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\CbrTestSampleView.xaml.cs">
-      <DependentUpon>CbrTestSampleView.xaml</DependentUpon>
+    <Compile Include="Views\CbrTestView.xaml.cs">
+      <DependentUpon>CbrTestView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -119,6 +121,18 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="DataSet\Adony\AD-2-12-1.cbr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="DataSet\Adony\AD-2-15-1.cbr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="DataSet\Adony\AD-2-18-1.cbr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="DataSet\Adony\AD-2-21-1.cbr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -134,7 +148,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\CbrTestSampleView.xaml">
+    <Page Include="Views\CbrTestView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -144,15 +158,15 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AD-2-12-1.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Primusz.SoilGenius.Core\Primusz.SoilGenius.Core.csproj">
       <Project>{01faced4-3d5b-4154-86d7-f81dc01af979}</Project>
       <Name>Primusz.SoilGenius.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DataSet\cbr_project.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
