@@ -47,32 +47,28 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public void LoadTestData()
         {
-            //OpenFileDialog dialog = new OpenFileDialog();
-
-            //if (dialog.ShowDialog() == true)
-            //{
-            //    using (FileStream stream = File.Open(dialog.FileName, FileMode.Open))
-            //    {
-            //        using (MultiensayoReader reader = new MultiensayoReader(stream))
-            //        {
-            //            CbrTestSample sample = reader.Read();
-            //            ActiveViewModel = new CbrTestSampleViewModel(sample);
-            //        }
-            //    }
-            //}
-
-            XmlProjectReader reader = new XmlProjectReader();
-            var list = reader.Read(File.Open(@"DataSet/cbr_project.xml", FileMode.Open));
-
-            var vm = ActiveViewModel as CbrTestViewModel;
-
-            foreach (var test in list)
+            using (FileStream stream = File.Open(@"DataSet/sample.dts", FileMode.Open))
             {
-                string path = Path.Combine("DataSet", test.File);
-                test.LoadTestFile(File.Open(path, FileMode.Open));
-
-                vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
+                using (MultiensayoReader reader = new MultiensayoReader(stream))
+                {
+                    TestData test = reader.Read();
+                    var vm = ActiveViewModel as CbrTestViewModel;
+                    vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
+                }
             }
+
+            //XmlProjectReader reader = new XmlProjectReader();
+            //var list = reader.Read(File.Open(@"DataSet/cbr_project.xml", FileMode.Open));
+
+            //var vm = ActiveViewModel as CbrTestViewModel;
+
+            //foreach (var test in list)
+            //{
+            //    string path = Path.Combine("DataSet", test.File);
+            //    test.LoadTestFile(File.Open(path, FileMode.Open));
+
+            //    vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
+            //}
         }
 
         //public void SaveTestData()

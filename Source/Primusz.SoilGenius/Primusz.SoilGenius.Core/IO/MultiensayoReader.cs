@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Globalization;
 using Primusz.SoilGenius.Core.Model;
+using Primusz.SoilGenius.Core.Extensions;
 
 namespace Primusz.SoilGenius.Core.IO
 {
@@ -38,9 +38,9 @@ namespace Primusz.SoilGenius.Core.IO
 
         #region Methods
 
-        public CbrTestData Read()
+        public TestData Read()
         {
-            CbrTestData sample = new CbrTestData();
+            TestData sample = new CbrTestData();
 
             while (!reader.EndOfStream)
             {
@@ -51,8 +51,8 @@ namespace Primusz.SoilGenius.Core.IO
                     if (line.Contains("Speed:"))
                         sample.ControlSpeed = ParseDoubleTextRow(line, "mm/min");
 
-                    //if (line.Contains("Sampling interval:"))
-                    //    sample.SamplingInterval = ParseDoubleTextRow(line, "s");
+                    if (line.Contains("Sampling interval:"))
+                        sample.SamplingInterval = ParseDoubleTextRow(line, "s");
 
                     if (line.Contains("Upper force limit:"))
                         UpperForceLimit = ParseDoubleTextRow(line, "kN");
@@ -66,16 +66,16 @@ namespace Primusz.SoilGenius.Core.IO
                     if (line.Contains("Lower stroke limit:"))
                         LowerStrokeLimit = ParseDoubleTextRow(line, "mm");
 
-                    //if (line.Contains("Control variable:"))
-                    //    sample.ControlVariable = ParseControlVariableTextRow(line);
+                    if (line.Contains("Control variable:"))
+                        sample.ControlVariable = ParseControlVariableTextRow(line);
 
-                    if (line == "Number;Time (s);Force (N);Stroke (mm);Strain (mm)")
+                    if (line == "Number;Time (s);Force (kN);Stroke (mm);Strain (mm)")
                     {
                         string row = reader.ReadLine();
                         while (row != "Final de los datos adquiridos en el ensayo")
                         {
                             var point = ParseTestPointTextRow(row);
-                            //sample.TestPoints.Add(point);
+                            sample.Points.Add(point);
                             row = reader.ReadLine();
                         }
                     }
@@ -88,7 +88,7 @@ namespace Primusz.SoilGenius.Core.IO
         {
             string variable = text.Substring(text.IndexOf(";", StringComparison.Ordinal) + 1)
                 .Replace(suffix, string.Empty);
-            return double.Parse(variable.Replace(',', '.'), CultureInfo.InvariantCulture);
+            return variable.ToDouble();
         }
 
         private ControlVariable ParseControlVariableTextRow(string text)
@@ -113,10 +113,10 @@ namespace Primusz.SoilGenius.Core.IO
 
                 if (buffer.Length == 5)
                 {
-                    point.Time = double.Parse(buffer[1].Replace(',', '.'), CultureInfo.InvariantCulture);
-                    point.Force = double.Parse(buffer[2].Replace(',', '.'), CultureInfo.InvariantCulture);
-                    point.Stroke = double.Parse(buffer[3].Replace(',', '.'), CultureInfo.InvariantCulture);
-                    point.Strain = double.Parse(buffer[4].Replace(',', '.'), CultureInfo.InvariantCulture);
+                    point.Time = buffer[1].ToDouble();
+                    point.Force = buffer[2].ToDouble();
+                    point.Stroke = buffer[3].ToDouble();
+                    point.Strain = buffer[4].ToDouble();
                 }
             }
             return point;

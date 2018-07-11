@@ -26,16 +26,6 @@ namespace Primusz.SoilGenius.Core.Model
         /// </summary>
         public string Standard { get; set; }
 
-        /// <summary>
-        /// Control speed [mm/min]
-        /// </summary>
-        public double ControlSpeed { get; set; }
-
-        /// <summary>
-        /// CBR Test Points
-        /// </summary>
-        public System.Collections.Generic.List<CbrTestPoint> Points { get; set; }
-
         #endregion
 
         #region Constructors
@@ -45,7 +35,7 @@ namespace Primusz.SoilGenius.Core.Model
             Name = "CBR";
             Standard = "MSZ EN 13286-47";
             ControlSpeed = 1.27;
-            Points = new System.Collections.Generic.List<CbrTestPoint>();
+            Points = new System.Collections.Generic.List<TestPoint>();
         }
 
         #endregion
@@ -61,7 +51,7 @@ namespace Primusz.SoilGenius.Core.Model
                         double x = row[0].ToDouble();
                         double y = row[1].ToDouble();
 
-                        Points.Add(new CbrTestPoint { Penetration = x, Force = y });
+                        Points.Add(new TestPoint { Stroke = x, Force = y });
                     }
                 }
             }

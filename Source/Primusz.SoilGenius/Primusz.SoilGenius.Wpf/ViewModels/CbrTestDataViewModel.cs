@@ -18,7 +18,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         private double slope = 2, intercept = 2;
         private bool adjustZeroPoint;
         private readonly ITestPlot plot;
-        private readonly CbrTestData data;
+        private readonly TestData data;
         private readonly LineAnnotation line;
 
         #endregion
@@ -112,13 +112,15 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         #region Constructors
 
-        public CbrTestDataViewModel(ITestPlot plot, CbrTestData data)
+        public CbrTestDataViewModel(ITestPlot plot, TestData data)
         {
             this.data = data;
             this.plot = plot;
             this.line = plot.LineAnnotation;
 
-            DisplayName = this.data.File.Replace(".cbr", string.Empty);
+            //DisplayName = this.data.File.Replace(".cbr", string.Empty);
+
+            DisplayName = "Alma";
 
             line.MouseDown += (s, e) =>
             {
@@ -133,7 +135,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             line.MouseMove += (s, e) =>
             {
                 var currPoint = line.InverseTransform(e.Position);
-                Intercept = currPoint.Y - currPoint.X * Slope;
+                line.Intercept = currPoint.Y - currPoint.X * line.Slope;
 
                 plot.PlotModel.InvalidatePlot(false);
                 e.Handled = true;
@@ -153,9 +155,9 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         {
             plot.ScatterSeries.Points.Clear();
 
-            foreach (CbrTestPoint point in data.Points)
+            foreach (TestPoint point in data.Points)
             {
-                plot.ScatterSeries.Points.Add(new ScatterPoint(point.Penetration, point.Force));
+                plot.ScatterSeries.Points.Add(new ScatterPoint(point.Stroke, point.Force));
             }
 
             plot.PlotModel.InvalidatePlot(true);
@@ -170,7 +172,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
             for (var i = 0; i < data.Points.Count; i++)
             {
-                x[i] = data.Points[i].Penetration;
+                x[i] = data.Points[i].Stroke;
                 y[i] = data.Points[i].Force;
 
                 if (x[i] >= maximum) maximum = x[i];

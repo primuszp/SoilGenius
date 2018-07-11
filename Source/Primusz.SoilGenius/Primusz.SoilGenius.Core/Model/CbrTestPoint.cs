@@ -1,15 +1,20 @@
 ﻿namespace Primusz.SoilGenius.Core.Model
 {
-    public class CbrTestPoint
+    public class CbrTestPoint : TestPoint
     {
-        /// <summary>
-        /// Force [kN]
-        /// </summary>
-        public double Force { get; set; }
-
         /// <summary>
         /// Penetration [mm]
         /// </summary>
-        public double Penetration { get; set; }
+        public double Penetration
+        {
+            get
+            {
+                return Stroke;
+            }
+            set
+            {
+                Stroke = value;
+            }
+        }
     }
 }
