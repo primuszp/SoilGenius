@@ -51,6 +51,7 @@
     <Compile Include="IO\DataReader.cs" />
     <Compile Include="IO\MultiensayoReader.cs" />
     <Compile Include="IO\XmlProjectReader.cs" />
+    <Compile Include="Numerics\FindPeak.cs" />
     <Compile Include="Numerics\Spline.cs" />
     <Compile Include="Model\CbrTestData.cs" />
     <Compile Include="Model\CbrTestPoint.cs" />

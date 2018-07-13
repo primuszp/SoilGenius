@@ -133,6 +133,9 @@
     <None Include="DataSet\Adony\AD-2-21-1.cbr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="DataSet\K1MESZ.DTS">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="DataSet\sample.dts">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

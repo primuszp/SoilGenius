@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Caliburn.Micro;
 using Primusz.SoilGenius.Core.Extensions;
@@ -47,13 +48,37 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public void LoadTestData()
         {
-            using (FileStream stream = File.Open(@"DataSet/sample.dts", FileMode.Open))
+            using (FileStream stream = File.Open(@"DataSet/K1MESZ.dts", FileMode.Open))
             {
                 using (MultiensayoReader reader = new MultiensayoReader(stream))
                 {
                     TestData test = reader.Read();
+
+                    var list = new System.Collections.Generic.List<double>();
+                    foreach (var p in test.Points)
+                    {
+                        list.Add(p.Force);
+                    }
+
+                    var peaks = Core.Numerics.FindPeak.FindPeaks(list, 25);
+
+                    TestData td2 = new TestData();
+
+                    double max = test.Points.Max(p => p.Force);
+                    double treshold = 0.10 * max;
+
+                    foreach (var index in peaks)
+                    {
+                        var tp = test.Points[index];
+
+                        if (tp.Force >= (max - treshold) && (tp.Force <= max + treshold))
+                        {
+                            td2.Points.Add(test.Points[index]);
+                        }
+                    }
+
                     var vm = ActiveViewModel as CbrTestViewModel;
-                    vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
+                    vm?.Tests.Add(new CbrTestDataViewModel(vm, td2));
                 }
             }
 
