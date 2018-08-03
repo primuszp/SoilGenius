@@ -1,6 +1,7 @@
 ﻿using System.IO;
-using Primusz.SoilGenius.Core.Extensions;
+using System.Collections.Generic;
 using Primusz.SoilGenius.Core.IO;
+using Primusz.SoilGenius.Core.Extensions;
 
 namespace Primusz.SoilGenius.Core.Model
 {
@@ -35,21 +36,21 @@ namespace Primusz.SoilGenius.Core.Model
             Name = "CBR";
             Standard = "MSZ EN 13286-47";
             ControlSpeed = 1.27;
-            Points = new System.Collections.Generic.List<TestPoint>();
+            Points = new List<TestPoint>();
         }
 
         #endregion
 
         public void LoadTestFile(Stream stream)
         {
-            using (DataReader reader = new DataReader(stream))
+            using (var reader = new DataReader(stream))
             {
                 if (reader.Read())
                 {
                     foreach (var row in reader.GetRows())
                     {
-                        double x = row[0].ToDouble();
-                        double y = row[1].ToDouble();
+                        var x = row[0].ToDouble();
+                        var y = row[1].ToDouble();
 
                         Points.Add(new TestPoint { Stroke = x, Force = y });
                     }

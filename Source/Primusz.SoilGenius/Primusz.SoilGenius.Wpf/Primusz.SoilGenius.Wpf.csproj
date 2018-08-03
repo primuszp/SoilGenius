@@ -86,18 +86,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Abstractions\ITestPlot.cs" />
+    <Compile Include="Abstractions\ICbrTestPlot.cs" />
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="ViewModels\CbrTestDataViewModel.cs" />
-    <Compile Include="ViewModels\CbrTestViewModel.cs" />
+    <Compile Include="ViewModels\CbrTestPlotViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\CbrTestView.xaml.cs">
-      <DependentUpon>CbrTestView.xaml</DependentUpon>
+    <Compile Include="Views\CbrTestPlotView.xaml.cs">
+      <DependentUpon>CbrTestPlotView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -154,7 +154,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\CbrTestView.xaml">
+    <Page Include="Views\CbrTestPlotView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

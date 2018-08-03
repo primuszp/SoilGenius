@@ -7,14 +7,8 @@
         /// </summary>
         public double Penetration
         {
-            get
-            {
-                return Stroke;
-            }
-            set
-            {
-                Stroke = value;
-            }
+            get => Stroke;
+            set => Stroke = value;
         }
     }
 }

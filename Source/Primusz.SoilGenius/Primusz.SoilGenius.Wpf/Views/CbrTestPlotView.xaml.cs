@@ -5,9 +5,9 @@ namespace Primusz.SoilGenius.Wpf.Views
     /// <summary>
     /// Interaction logic for CbrTestSampleView.xaml
     /// </summary>
-    public partial class CbrTestView : UserControl
+    public partial class CbrTestPlotView : UserControl
     {
-        public CbrTestView()
+        public CbrTestPlotView()
         {
             InitializeComponent();
         }

@@ -37,7 +37,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public ShellViewModel(IEventAggregator aggregator)
         {
-            ActiveViewModel = new CbrTestViewModel();
+            ActiveViewModel = new CbrTestPlotViewModel();
 
             if (aggregator != null)
             {
@@ -48,52 +48,52 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public void LoadTestData()
         {
-            using (FileStream stream = File.Open(@"DataSet/K1MESZ.dts", FileMode.Open))
-            {
-                using (MultiensayoReader reader = new MultiensayoReader(stream))
-                {
-                    TestData test = reader.Read();
-
-                    var list = new System.Collections.Generic.List<double>();
-                    foreach (var p in test.Points)
-                    {
-                        list.Add(p.Force);
-                    }
-
-                    var peaks = Core.Numerics.FindPeak.FindPeaks(list, 25);
-
-                    TestData td2 = new TestData();
-
-                    double max = test.Points.Max(p => p.Force);
-                    double treshold = 0.10 * max;
-
-                    foreach (var index in peaks)
-                    {
-                        var tp = test.Points[index];
-
-                        if (tp.Force >= (max - treshold) && (tp.Force <= max + treshold))
-                        {
-                            td2.Points.Add(test.Points[index]);
-                        }
-                    }
-
-                    var vm = ActiveViewModel as CbrTestViewModel;
-                    vm?.Tests.Add(new CbrTestDataViewModel(vm, td2));
-                }
-            }
-
-            //XmlProjectReader reader = new XmlProjectReader();
-            //var list = reader.Read(File.Open(@"DataSet/cbr_project.xml", FileMode.Open));
-
-            //var vm = ActiveViewModel as CbrTestViewModel;
-
-            //foreach (var test in list)
+            //using (FileStream stream = File.Open(@"DataSet/K1MESZ.dts", FileMode.Open))
             //{
-            //    string path = Path.Combine("DataSet", test.File);
-            //    test.LoadTestFile(File.Open(path, FileMode.Open));
+            //    using (MultiensayoReader reader = new MultiensayoReader(stream))
+            //    {
+            //        TestData test = reader.Read();
 
-            //    vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
+            //        var list = new System.Collections.Generic.List<double>();
+            //        foreach (var p in test.Points)
+            //        {
+            //            list.Add(p.Force);
+            //        }
+
+            //        var peaks = Core.Numerics.FindPeak.FindPeaks(list, 25);
+
+            //        TestData td2 = new TestData();
+
+            //        double max = test.Points.Max(p => p.Force);
+            //        double treshold = 0.10 * max;
+
+            //        foreach (var index in peaks)
+            //        {
+            //            var tp = test.Points[index];
+
+            //            if (tp.Force >= (max - treshold) && (tp.Force <= max + treshold))
+            //            {
+            //                td2.Points.Add(test.Points[index]);
+            //            }
+            //        }
+
+            //        var vm = ActiveViewModel as CbrTestViewModel;
+            //        vm?.Tests.Add(new CbrTestDataViewModel(vm, td2));
+            //    }
             //}
+
+            XmlProjectReader reader = new XmlProjectReader();
+            var list = reader.Read(File.Open(@"DataSet/cbr_project.xml", FileMode.Open));
+
+            var vm = ActiveViewModel as CbrTestPlotViewModel;
+
+            foreach (var test in list)
+            {
+                string path = Path.Combine("DataSet", test.File);
+                test.LoadTestFile(File.Open(path, FileMode.Open));
+
+                vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
+            }
         }
 
         //public void SaveTestData()

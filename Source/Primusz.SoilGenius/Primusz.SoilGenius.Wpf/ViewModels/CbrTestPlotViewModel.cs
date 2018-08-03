@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -11,7 +11,7 @@ using Primusz.SoilGenius.Wpf.Abstractions;
 
 namespace Primusz.SoilGenius.Wpf.ViewModels
 {
-    public class CbrTestViewModel : PropertyChangedBase, ITestPlot
+    public class CbrTestPlotViewModel : PropertyChangedBase, ICbrTestPlot
     {
         #region Members
 
@@ -31,7 +31,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public CbrTestDataViewModel SelectedTest
         {
-            get { return selectedTest; }
+            get => selectedTest;
             set
             {
                 if (value != selectedTest)
@@ -46,7 +46,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         #endregion
 
-        public CbrTestViewModel(IList<CbrTestData> dataset = null)
+        public CbrTestPlotViewModel(IList<CbrTestData> dataset = null)
         {
             Tests = new ObservableCollection<CbrTestDataViewModel>();
 
@@ -65,11 +65,13 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         {
             base.NotifyOfPropertyChange(propertyName);
             {
-                if (propertyName == "SelectedTest")
+                switch (propertyName)
                 {
-                    SelectedTest.RenderSpline();
-                    SelectedTest.RenderDataPoints();
-                    SelectedTest.RenderLineAnnotations();
+                    case "SelectedTest":
+                        SelectedTest.RenderSpline();
+                        SelectedTest.RenderDataPoints();
+                        SelectedTest.RenderLineAnnotation();
+                        break;
                 }
             }
         }
@@ -84,7 +86,9 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 TextColor = OxyColors.White,
                 TitleFontSize = 14,
                 PlotAreaBackground = color,
-                Background = OxyColor.FromArgb(50, 255, 255, 255)
+                Background = OxyColor.FromArgb(50, 255, 255, 255),
+                LegendTitle = "Legend",
+                LegendPosition = LegendPosition.RightBottom
             };
 
             var axisY = new LinearAxis
@@ -127,10 +131,79 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 Intercept = 2.0
             };
 
+            LineAnnotation.MouseDown += (s, e) =>
+            {
+                if (e.ChangedButton == OxyMouseButton.Left)
+                {
+                    LineAnnotation.StrokeThickness *= 1.2;
+                    PlotModel.InvalidatePlot(false);
+                    e.Handled = true;
+                }
+            };
+
+            LineAnnotation.MouseMove += (s, e) =>
+            {
+                var currPoint = LineAnnotation.InverseTransform(e.Position);
+                LineAnnotation.Intercept = currPoint.Y - currPoint.X * LineAnnotation.Slope;
+
+                SelectedTest.Slope = LineAnnotation.Slope;
+                SelectedTest.Intercept = LineAnnotation.Intercept;
+
+                PlotModel.InvalidatePlot(false);
+                e.Handled = true;
+            };
+
+            LineAnnotation.MouseUp += (s, e) =>
+            {
+                LineAnnotation.StrokeThickness /= 1.2;
+                PlotModel.InvalidatePlot(false);
+                e.Handled = true;
+            };
+
             PlotModel.Axes.Add(axisX);
             PlotModel.Axes.Add(axisY);
             PlotModel.Series.Add(LineSeries);
             PlotModel.Series.Add(ScatterSeries);
+        }
+
+        public void InvalidatePlot(bool updateData = false)
+        {
+            PlotModel.InvalidatePlot(updateData);
+        }
+
+        public void SetLineVisibility(bool isVisible = false)
+        {
+            if (isVisible)
+            {
+                if (PlotModel.Annotations.Contains(LineAnnotation) == false)
+                {
+                    PlotModel.Annotations.Add(LineAnnotation);
+                }
+            }
+            else
+            {
+                PlotModel.Annotations.Remove(LineAnnotation);
+            }
+        }
+
+        public void SetCbrValue(double cbr25, double cbr50)
+        {
+            var cbr25Text = new TextAnnotation
+            {
+                Text = $"CBR25 = {cbr25}",
+                Background = OxyColor.FromArgb(50, 255, 255, 255),
+                TextPosition = new DataPoint(2.5, cbr25)
+            };
+
+            var cbr50Text = new TextAnnotation
+            {
+                Text = $"CBR50 = {cbr50}",
+                Background = OxyColor.FromArgb(50, 255, 255, 255),
+                TextPosition = new DataPoint(5.0, cbr50)
+            };
+
+            PlotModel.Annotations.Add(cbr25Text);
+            PlotModel.Annotations.Add(cbr50Text);
         }
 
         //private void ExportToDxf(LineSeries series, string fileName)
