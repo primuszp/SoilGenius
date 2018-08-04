@@ -1,10 +1,8 @@
 ﻿using System;
-using OxyPlot;
-using OxyPlot.Series;
+using System.Collections.Generic;
 using Caliburn.Micro;
 using Primusz.SoilGenius.Core.Model;
-using Primusz.SoilGenius.Core.Numerics;
-using Primusz.SoilGenius.Wpf.Abstractions;
+using Primusz.SoilGenius.Wpf.Messages;
 
 namespace Primusz.SoilGenius.Wpf.ViewModels
 {
@@ -13,11 +11,8 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         #region Members
 
         private bool adjustZeroPoint;
-        private double slope, intercept;
-
-        private readonly Spline spline = new Spline { Nodes = 25, Rho = 2 };
-        private readonly ICbrTestPlot plot;
-        private readonly CbrTestData data;
+        private readonly CbrTestData testData;
+        private readonly IEventAggregator eventAggregator;
 
         #endregion
 
@@ -25,11 +20,10 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public double Slope
         {
-            get => slope;
+            get => testData.TestResults.Slope;
             set
             {
-                slope = value;
-                plot.LineAnnotation.Slope = value;
+                testData.TestResults.Slope = value;
                 NotifyOfPropertyChange(() => Slope);
                 NotifyOfPropertyChange(() => ZeroPoint);
             }
@@ -41,27 +35,12 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public double Intercept
         {
-            get => intercept;
+            get => testData.TestResults.Intercept;
             set
             {
-                intercept = value;
-                plot.LineAnnotation.Intercept = value;
+                testData.TestResults.Intercept = value;
                 NotifyOfPropertyChange(() => Intercept);
                 NotifyOfPropertyChange(() => ZeroPoint);
-            }
-        }
-
-        public bool AdjustZeroPoint
-        {
-            get => adjustZeroPoint;
-            set
-            {
-                if (value != adjustZeroPoint)
-                {
-                    adjustZeroPoint = value;
-                    NotifyOfPropertyChange(() => ZeroPoint);
-                    NotifyOfPropertyChange(() => AdjustZeroPoint);
-                }
             }
         }
 
@@ -79,103 +58,102 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public double SplineRho
         {
-            get => spline.Rho;
+            get => testData.TestResults.SplineRho;
             set
             {
-                spline.Rho = value;
+                testData.TestResults.SplineRho = value;
                 NotifyOfPropertyChange(() => SplineRho);
             }
         }
 
-        public int SplineNodes
+        public double SplineNodes
         {
-            get => spline.Nodes;
+            get => testData.TestResults.SplineNodes;
             set
             {
-                spline.Nodes = value;
+                testData.TestResults.SplineNodes = value;
                 NotifyOfPropertyChange(() => SplineNodes);
             }
         }
 
-        public string DisplayName => data?.File.Replace(".cbr", string.Empty);
+        public double Force25
+        {
+            get => testData.TestResults.F25;
+            set
+            {
+                testData.TestResults.F25 = value;
+                NotifyOfPropertyChange(() => Force25);
+            }
+        }
+
+        public double Force50
+        {
+            get => testData.TestResults.F50;
+            set
+            {
+                testData.TestResults.F50 = value;
+                NotifyOfPropertyChange(() => Force50);
+            }
+        }
+
+        public Boolean AdjustZeroPoint
+        {
+            get => adjustZeroPoint;
+            set
+            {
+                if (value != adjustZeroPoint)
+                {
+                    adjustZeroPoint = value;
+                    NotifyOfPropertyChange(() => ZeroPoint);
+                    NotifyOfPropertyChange(() => AdjustZeroPoint);
+                }
+            }
+        }
+
+        public string DisplayName => testData?.Name;
+
+        public IList<ITestPoint> TestDataPoints => testData?.TestDataPoints;
 
         #endregion
 
         #region Constructors
 
-        public CbrTestDataViewModel(ICbrTestPlot plot, CbrTestData data)
+        public CbrTestDataViewModel(CbrTestData testData, IEventAggregator eventAggregator)
         {
-            this.data = data;
-            this.plot = plot;
+            this.testData = testData;
+            this.eventAggregator = eventAggregator;
 
             FillSlopeRangeFromDataPoints();
         }
 
         #endregion
 
-        public void RenderDataPoints()
+        private void FillSlopeRangeFromDataPoints()
         {
-            plot.ScatterSeries.Points.Clear();
+            var min = double.MaxValue;
+            var max = double.MinValue;
+            var sum = 0.0;
 
-            foreach (var point in data.Points)
+            for (var i = 0; i < testData.TestDataPoints.Count - 1; i++)
             {
-                plot.ScatterSeries.Points.Add(new ScatterPoint(point.Stroke, point.Force));
+                var p1 = testData.TestDataPoints[i + 0];
+                var p2 = testData.TestDataPoints[i + 1];
+
+                var result = Math.Round(Math.Abs(p1.Force - p2.Force) / Math.Abs(p1.Stroke - p2.Stroke), 2);
+
+                if (result > max) max = result;
+                if (result < min) min = result;
+
+                sum += result;
             }
 
-            plot.InvalidatePlot(true);
+            Slope = sum / (testData.TestDataPoints.Count - 1);
+
+            MinSlope = min;
+            MaxSlope = max;
         }
 
-        public void RenderSpline(double step = 0.005d)
-        {
-            double maximum = 0;
-
-            double[] x = new double[data.Points.Count];
-            double[] y = new double[data.Points.Count];
-
-            for (var i = 0; i < data.Points.Count; i++)
-            {
-                x[i] = data.Points[i].Stroke;
-                y[i] = data.Points[i].Force;
-
-                if (x[i] >= maximum) maximum = x[i];
-            }
-
-            spline.X = x;
-            spline.Y = y;
-
-            if (data.Points.Count > 0)
-            {
-                if (spline.Fit())
-                {
-                    plot.LineSeries.Points.Clear();
-                    plot.LineSeries.Color = OxyColors.Green;
-
-                    for (double i = 0; i <= maximum; i += step)
-                    {
-                        plot.LineSeries.Points.Add(new DataPoint(i, spline.Calculation(i)));
-                    }
-
-                    plot.InvalidatePlot(true);
-                }
-            }
-        }
-
-        public void RenderLineAnnotation(bool updateData = false)
-        {
-            if (adjustZeroPoint)
-            {
-                plot.LineAnnotation.Slope = Slope;
-                plot.LineAnnotation.Intercept = Intercept;
-
-                plot.SetLineVisibility(true);
-                plot.InvalidatePlot(updateData);
-            }
-            else
-            {
-                plot.SetLineVisibility();
-                plot.InvalidatePlot(updateData);
-            }
-        }
+        #region Overridden Methods
 
         public override void NotifyOfPropertyChange(string propertyName = null)
         {
@@ -185,50 +163,17 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 {
                     case "Slope":
                     case "Intercept":
-                        plot.InvalidatePlot();
-                        break;
                     case "SplineRho":
                     case "SplineNodes":
-                        RenderSpline();
-                        break;
                     case "AdjustZeroPoint":
-                        RenderLineAnnotation();
+                        {
+                            eventAggregator.PublishOnUIThread(PlotMessages.InvalidatePlot);
+                        }
                         break;
                 }
-
-                //var cbr25 = Math.Round(spline.Calculation(ZeroPoint + 2.5), 2);
-                //var cbr50 = Math.Round(spline.Calculation(ZeroPoint + 5.0), 2);
-
-                //plot.SetCbrValue(cbr25, cbr50);
             }
         }
 
-        private void FillSlopeRangeFromDataPoints()
-        {
-            var min = double.MaxValue;
-            var max = double.MinValue;
-            var sum = 0.0;
-
-            for (var i = 0; i < data.Points.Count - 1; i++)
-            {
-                var p1 = data.Points[i + 0];
-                var p2 = data.Points[i + 1];
-
-                var result = Math.Abs(p1.Force - p2.Force) / Math.Abs(p1.Stroke - p2.Stroke);
-
-                if (result > max)
-                    max = result;
-
-                if (result < min)
-                    min = result;
-
-                sum += result;
-            }
-
-            Slope = sum / (data.Points.Count - 1);
-
-            MinSlope = min;
-            MaxSlope = max;
-        }
+        #endregion
     }
 }

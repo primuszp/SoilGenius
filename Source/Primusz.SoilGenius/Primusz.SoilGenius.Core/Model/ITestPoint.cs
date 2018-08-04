@@ -1,25 +1,25 @@
 ﻿namespace Primusz.SoilGenius.Core.Model
 {
-    public class TestPoint
+    public interface ITestPoint
     {
         /// <summary>
         /// Time [s]
         /// </summary>
-        public double Time { get; set; }
+        double Time { get; set; }
 
         /// <summary>
         /// Force [N]
         /// </summary>
-        public double Force { get; set; }
+        double Force { get; set; }
 
         /// <summary>
         /// Stroke [mm]
         /// </summary>
-        public double Stroke { get; set; }
+        double Stroke { get; set; }
 
         /// <summary>
         /// Strain [mm]
         /// </summary>
-        public double Strain { get; set; }
+        double Strain { get; set; }
     }
 }

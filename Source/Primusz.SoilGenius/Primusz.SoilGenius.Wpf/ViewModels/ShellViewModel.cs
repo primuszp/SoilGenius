@@ -13,8 +13,8 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
     {
         #region Members
 
-        private readonly IEventAggregator aggregator;
         private object activeViewModel;
+        private readonly IEventAggregator aggregator;
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         public ShellViewModel(IEventAggregator aggregator)
         {
-            ActiveViewModel = new CbrTestPlotViewModel();
+            ActiveViewModel = new CbrTestPlotViewModel(aggregator);
 
             if (aggregator != null)
             {
@@ -92,7 +92,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 string path = Path.Combine("DataSet", test.File);
                 test.LoadTestFile(File.Open(path, FileMode.Open));
 
-                vm?.Tests.Add(new CbrTestDataViewModel(vm, test));
+                vm?.Tests.Add(new CbrTestDataViewModel(test, aggregator));
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OxyPlot;
@@ -7,27 +8,33 @@ using OxyPlot.Series;
 using OxyPlot.Annotations;
 using Caliburn.Micro;
 using Primusz.SoilGenius.Core.Model;
-using Primusz.SoilGenius.Wpf.Abstractions;
+using Primusz.SoilGenius.Core.Numerics;
+using Primusz.SoilGenius.Wpf.Messages;
 
 namespace Primusz.SoilGenius.Wpf.ViewModels
 {
-    public class CbrTestPlotViewModel : PropertyChangedBase, ICbrTestPlot
+    public class CbrTestPlotViewModel : PropertyChangedBase, IHandle<string>
     {
         #region Members
 
         private CbrTestDataViewModel selectedTest;
+        private readonly Spline spline = new Spline { Nodes = 25, Rho = 2 };
 
         #endregion
 
         #region Properties
 
-        public PlotModel PlotModel { get; private set; }
+        public PlotModel PlotModel { get; set; }
 
-        public LineSeries LineSeries { get; private set; }
+        private LineSeries LineSeries { get; set; }
 
-        public ScatterSeries ScatterSeries { get; private set; }
+        private ScatterSeries ScatterSeries { get; set; }
 
-        public LineAnnotation LineAnnotation { get; private set; }
+        private LineAnnotation LineAnnotation { get; set; }
+
+        private TextAnnotation TextAnnotation1 { get; set; }
+
+        private TextAnnotation TextAnnotation2 { get; set; }
 
         public CbrTestDataViewModel SelectedTest
         {
@@ -46,35 +53,26 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         #endregion
 
-        public CbrTestPlotViewModel(IList<CbrTestData> dataset = null)
+        #region Constructors
+
+        public CbrTestPlotViewModel(IEventAggregator eventAggregator, IList<CbrTestData> dataset = null)
         {
+            eventAggregator.Subscribe(this);
+
             Tests = new ObservableCollection<CbrTestDataViewModel>();
 
             if (dataset != null)
             {
                 foreach (var item in dataset)
                 {
-                    Tests.Add(new CbrTestDataViewModel(this, item));
+                    Tests.Add(new CbrTestDataViewModel(item, eventAggregator));
                 }
             }
 
             SetupPlotModel();
         }
 
-        public override void NotifyOfPropertyChange(string propertyName = null)
-        {
-            base.NotifyOfPropertyChange(propertyName);
-            {
-                switch (propertyName)
-                {
-                    case "SelectedTest":
-                        SelectedTest.RenderSpline();
-                        SelectedTest.RenderDataPoints();
-                        SelectedTest.RenderLineAnnotation();
-                        break;
-                }
-            }
-        }
+        #endregion
 
         private void SetupPlotModel()
         {
@@ -87,7 +85,6 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 TitleFontSize = 14,
                 PlotAreaBackground = color,
                 Background = OxyColor.FromArgb(50, 255, 255, 255),
-                LegendTitle = "Legend",
                 LegendPosition = LegendPosition.RightBottom
             };
 
@@ -120,13 +117,30 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 MarkerSize = 4
             };
 
-            LineSeries = new LineSeries { Smooth = false };
+            LineSeries = new LineSeries { Smooth = false, StrokeThickness = 3.0 };
 
+            TextAnnotation1 = new TextAnnotation
+            {
+                FontSize = 12d,
+                FontWeight = FontWeights.Bold,
+                TextColor = OxyColors.Black,
+                Background = OxyColors.Silver,
+                Offset = new ScreenVector(0, -50)
+            };
+
+            TextAnnotation2 = new TextAnnotation
+            {
+                FontSize = 12d,
+                FontWeight = FontWeights.Bold,
+                TextColor = OxyColors.Black,
+                Background = OxyColors.Silver,
+                Offset = new ScreenVector(0, -50)
+            };
 
             LineAnnotation = new LineAnnotation
             {
                 Type = LineAnnotationType.LinearEquation,
-                StrokeThickness = 2.0,
+                StrokeThickness = 3.0,
                 Slope = 2.0,
                 Intercept = 2.0
             };
@@ -144,10 +158,9 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             LineAnnotation.MouseMove += (s, e) =>
             {
                 var currPoint = LineAnnotation.InverseTransform(e.Position);
-                LineAnnotation.Intercept = currPoint.Y - currPoint.X * LineAnnotation.Slope;
 
                 SelectedTest.Slope = LineAnnotation.Slope;
-                SelectedTest.Intercept = LineAnnotation.Intercept;
+                SelectedTest.Intercept = currPoint.Y - currPoint.X * LineAnnotation.Slope;
 
                 PlotModel.InvalidatePlot(false);
                 e.Handled = true;
@@ -166,59 +179,20 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             PlotModel.Series.Add(ScatterSeries);
         }
 
-        public void InvalidatePlot(bool updateData = false)
-        {
-            PlotModel.InvalidatePlot(updateData);
-        }
-
-        public void SetLineVisibility(bool isVisible = false)
+        private void SetAnnotationVisibility(Annotation annotation, bool isVisible = false)
         {
             if (isVisible)
             {
-                if (PlotModel.Annotations.Contains(LineAnnotation) == false)
+                if (PlotModel.Annotations.Contains(annotation) == false)
                 {
-                    PlotModel.Annotations.Add(LineAnnotation);
+                    PlotModel.Annotations.Add(annotation);
                 }
             }
             else
             {
-                PlotModel.Annotations.Remove(LineAnnotation);
+                PlotModel.Annotations.Remove(annotation);
             }
         }
-
-        public void SetCbrValue(double cbr25, double cbr50)
-        {
-            var cbr25Text = new TextAnnotation
-            {
-                Text = $"CBR25 = {cbr25}",
-                Background = OxyColor.FromArgb(50, 255, 255, 255),
-                TextPosition = new DataPoint(2.5, cbr25)
-            };
-
-            var cbr50Text = new TextAnnotation
-            {
-                Text = $"CBR50 = {cbr50}",
-                Background = OxyColor.FromArgb(50, 255, 255, 255),
-                TextPosition = new DataPoint(5.0, cbr50)
-            };
-
-            PlotModel.Annotations.Add(cbr25Text);
-            PlotModel.Annotations.Add(cbr50Text);
-        }
-
-        //private void ExportToDxf(LineSeries series, string fileName)
-        //{
-        //    DxfDocument dxf = new DxfDocument();
-        //    LwPolyline polyline = new LwPolyline();
-
-        //    foreach (var p in series.Points)
-        //    {
-        //        polyline.Vertexes.Add(new LwPolylineVertex(10 * p.X, 10 * p.Y));
-        //    }
-
-        //    dxf.AddEntity(polyline);
-        //    dxf.Save(fileName);
-        //}
 
         private void ExportSeries(LineSeries series, string fileName)
         {
@@ -233,5 +207,130 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 }
             }
         }
+
+        private void RenderSpline(bool invalidatePlot = false)
+        {
+            double maximum = 0;
+
+            double[] x = new double[SelectedTest.TestDataPoints.Count];
+            double[] y = new double[SelectedTest.TestDataPoints.Count];
+
+            for (var i = 0; i < SelectedTest.TestDataPoints.Count; i++)
+            {
+                x[i] = SelectedTest.TestDataPoints[i].Stroke;
+                y[i] = SelectedTest.TestDataPoints[i].Force;
+
+                if (x[i] >= maximum) maximum = x[i];
+            }
+
+            spline.X = x;
+            spline.Y = y;
+            spline.Rho = SelectedTest.SplineRho;
+            spline.Nodes = (int)SelectedTest.SplineNodes;
+
+            if (SelectedTest.TestDataPoints.Count > 0)
+            {
+                if (spline.Fit())
+                {
+                    LineSeries.Points.Clear();
+                    LineSeries.Color = OxyColors.Green;
+
+                    for (double i = 0; i <= maximum; i += 0.05d)
+                    {
+                        LineSeries.Points.Add(new DataPoint(i, spline.Calculation(i)));
+                    }
+
+                    SelectedTest.Force25 = Math.Round(spline.Calculation(SelectedTest.ZeroPoint + 2.5), 2);
+                    SelectedTest.Force50 = Math.Round(spline.Calculation(SelectedTest.ZeroPoint + 5.0), 2);
+
+                    if (invalidatePlot)
+                    {
+                        PlotModel.InvalidatePlot(true);
+                    }
+                }
+            }
+        }
+
+        private void RenderDataPoints(bool invalidatePlot = false)
+        {
+            ScatterSeries.Points.Clear();
+
+            foreach (var point in SelectedTest.TestDataPoints)
+            {
+                ScatterSeries.Points.Add(new ScatterPoint(point.Stroke, point.Force));
+            }
+
+            if (invalidatePlot)
+            {
+                PlotModel.InvalidatePlot(true);
+            }
+        }
+
+        private void RenderTextAnnotation(bool invalidatePlot = false)
+        {
+            TextAnnotation1.TextPosition = new DataPoint(2.5 + SelectedTest.ZeroPoint, SelectedTest.Force25);
+            TextAnnotation1.Text = $"{selectedTest.Force25:0.00} kN";
+
+            TextAnnotation2.TextPosition = new DataPoint(5.0 + SelectedTest.ZeroPoint, SelectedTest.Force50);
+            TextAnnotation2.Text = $"{selectedTest.Force50:0.00} kN";
+
+            SetAnnotationVisibility(TextAnnotation1, true);
+            SetAnnotationVisibility(TextAnnotation2, true);
+
+            if (invalidatePlot)
+            {
+                PlotModel.InvalidatePlot(true);
+            }
+        }
+
+        private void RenderLineAnnotation(bool invalidatePlot = false)
+        {
+            LineAnnotation.Slope = SelectedTest.Slope;
+            LineAnnotation.Intercept = SelectedTest.Intercept;
+
+            SetAnnotationVisibility(LineAnnotation, SelectedTest.AdjustZeroPoint);
+
+            if (invalidatePlot)
+            {
+                PlotModel.InvalidatePlot(true);
+            }
+        }
+
+        #region Overridden Methods
+
+        public override void NotifyOfPropertyChange(string propertyName = null)
+        {
+            base.NotifyOfPropertyChange(propertyName);
+            {
+                switch (propertyName)
+                {
+                    case "SelectedTest":
+                        {
+                            RenderSpline(true);
+                            RenderDataPoints(true);
+                            RenderTextAnnotation(true);
+                            RenderLineAnnotation(true);
+                        }
+                        break;
+                }
+            }
+        }
+
+        #endregion
+
+        #region From IHandle Interface
+
+        public void Handle(string message)
+        {
+            if (SelectedTest != null && PlotMessages.InvalidatePlot == message)
+            {
+                RenderSpline();
+                RenderDataPoints();
+                RenderTextAnnotation();
+                RenderLineAnnotation(true);
+            }
+        }
+
+        #endregion
     }
 }

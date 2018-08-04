@@ -1,10 +1,29 @@
 <Project>
   <Directory Name="Adony">
-    <TestData Name="CBR" Operator="SOE" Standard="MSZ EN 13286-47" ControlSpeed="1.27">
-      <TestPoints File="AD-2-12-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="12%" Time="1h"/>
-      <TestPoints File="AD-2-15-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="15%" Time="1h"/>
-      <TestPoints File="AD-2-18-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="18%" Time="1h"/>
-      <TestPoints File="AD-2-21-1.cbr" Code="AD" DateTime="2008-01-01" Lime="2%" Water="21%" Time="1h"/>
+
+    <TestData Name="AD-2-12-1" File="AD-2-12-1.cbr" Operator="SOE" DateTime="2008-01-01" Standard="MSZ EN 13286-47">
+      <TestSetting ControlSpeed="1.27" ControlStyle="Stroke"/>
+      <TestMixture SoilName="Adony" BinderName="Lime" BinderContent="2%" MoistureContent="12%" Age="1h"/>
+      <TestResults/>
     </TestData>
+
+    <TestData Name="AD-2-15-1" File="AD-2-15-1.cbr" Operator="SOE" DateTime="2008-01-01" Standard="MSZ EN 13286-47">
+      <TestSetting ControlSpeed="1.27" ControlStyle="Stroke"/>
+      <TestMixture SoilName="Adony" BinderName="Lime" BinderContent="2%" MoistureContent="15%" Age="1h"/>
+      <TestResults/>
+    </TestData>
+
+    <TestData Name="AD-2-18-1" File="AD-2-18-1.cbr" Operator="SOE" DateTime="2008-01-01" Standard="MSZ EN 13286-47">
+      <TestSetting ControlSpeed="1.27" ControlStyle="Stroke"/>
+      <TestMixture SoilName="Adony" BinderName="Lime" BinderContent="2%" MoistureContent="18%" Age="1h"/>
+      <TestResults/>
+    </TestData>
+
+    <TestData Name="AD-2-21-1" File="AD-2-21-1.cbr" Operator="SOE" DateTime="2008-01-01" Standard="MSZ EN 13286-47">
+      <TestSetting ControlSpeed="1.27" ControlStyle="Stroke"/>
+      <TestMixture SoilName="Adony" BinderName="Lime" BinderContent="2%" MoistureContent="21%" Age="1h"/>
+      <TestResults/>
+    </TestData>
+
   </Directory>
 </Project>

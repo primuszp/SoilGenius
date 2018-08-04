@@ -86,9 +86,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Abstractions\ICbrTestPlot.cs" />
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="Messages\PlotMessages.cs" />
     <Compile Include="ViewModels\CbrTestDataViewModel.cs" />
     <Compile Include="ViewModels\CbrTestPlotViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
@@ -172,8 +172,10 @@
   <ItemGroup>
     <None Include="DataSet\cbr_project.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

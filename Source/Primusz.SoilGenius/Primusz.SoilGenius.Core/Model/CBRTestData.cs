@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Primusz.SoilGenius.Core.IO;
 using Primusz.SoilGenius.Core.Extensions;
@@ -8,9 +9,14 @@ namespace Primusz.SoilGenius.Core.Model
     /// <summary>
     /// California Bearing Ratio (CBR) Test Data Sheet
     /// </summary>
-    public class CbrTestData : TestData
+    public class CbrTestData : ITestData
     {
         #region Properties
+
+        /// <summary>
+        /// Test Id
+        /// </summary>
+        public Guid Id { get; }
 
         /// <summary>
         /// Test Name
@@ -27,16 +33,43 @@ namespace Primusz.SoilGenius.Core.Model
         /// </summary>
         public string Standard { get; set; }
 
+        /// <summary>
+        /// Name or Code of Operator
+        /// </summary>
+        public string Operator { get; set; }
+
+        /// <summary>
+        /// Test Date and Time
+        /// </summary>
+        public DateTime DateTime { get; set; }
+
+        /// <summary>
+        /// Test Setting
+        /// </summary>
+        public TestSetting TestSetting { get; set; }
+
+        /// <summary>
+        /// Test Results
+        /// </summary>
+        public TestResults TestResults { get; set; }
+
+        /// <summary>
+        /// Test points
+        /// </summary>
+        public IList<ITestPoint> TestDataPoints { get; set; }
+
         #endregion
 
         #region Constructors
 
         public CbrTestData()
         {
-            Name = "CBR";
+            Id = Guid.NewGuid();
+            DateTime = DateTime.UtcNow;
             Standard = "MSZ EN 13286-47";
-            ControlSpeed = 1.27;
-            Points = new List<TestPoint>();
+            TestSetting = new TestSetting();
+            TestResults = new TestResults();
+            TestDataPoints = new List<ITestPoint>();
         }
 
         #endregion
@@ -52,7 +85,7 @@ namespace Primusz.SoilGenius.Core.Model
                         var x = row[0].ToDouble();
                         var y = row[1].ToDouble();
 
-                        Points.Add(new TestPoint { Stroke = x, Force = y });
+                        TestDataPoints.Add(new CbrTestPoint { Stroke = x, Force = y });
                     }
                 }
             }

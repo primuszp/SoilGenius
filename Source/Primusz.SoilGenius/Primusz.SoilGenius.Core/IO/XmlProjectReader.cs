@@ -25,33 +25,32 @@ namespace Primusz.SoilGenius.Core.IO
                     foreach (var xtd in xdir.Elements("TestData"))
                     {
                         var name = xtd.Attribute("Name")?.Value;
+                        var file = xtd.Attribute("File")?.Value;
+                        var date = xtd.Attribute("DateTime")?.Value;
                         var standard = xtd.Attribute("Standard")?.Value;
                         var operatos = xtd.Attribute("Operator")?.Value;
-                        var controlspeed = xtd.Attribute("ControlSpeed")?.Value;
-
-                        var xpoints = xtd.Elements("TestPoints");
-
-                        foreach (var xpoint in xpoints)
+                       
+                        foreach (var xitem in xtd.Elements())
                         {
-                            var file = xpoint.Attribute("File")?.Value;
-                            var code = xpoint.Attribute("Code")?.Value;
-                            var date = xpoint.Attribute("DateTime")?.Value;
-
-                            var path = Path.Combine(directory, file);
-
-                            var test = new CbrTestData
+                            if (xitem.Name == "TestSetting")
                             {
-                                Code = code,
-                                Name = name,
-                                File = path,
-                                Operator = operatos,
-                                Standard = standard,
-                                DateTime = DateTime.Parse(date),
-                                ControlSpeed = controlspeed.ToDouble()
-                            };
-
-                            list.Add(test);
+                                var controlspeed = xitem.Attribute("ControlSpeed")?.Value;
+                                var controlstyle = xitem.Attribute("ControlStyle")?.Value;
+                            }
                         }
+
+                        var path = Path.Combine(directory, file);
+
+                        var test = new CbrTestData
+                        {
+                            Name = name,
+                            File = path,
+                            Operator = operatos,
+                            Standard = standard,
+                            DateTime = DateTime.Parse(date)
+                        };
+
+                        list.Add(test);
                     }
                 }
             }
