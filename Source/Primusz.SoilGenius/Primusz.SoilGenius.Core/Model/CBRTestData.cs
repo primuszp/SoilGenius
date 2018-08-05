@@ -54,6 +54,11 @@ namespace Primusz.SoilGenius.Core.Model
         public TestResults TestResults { get; set; }
 
         /// <summary>
+        /// Test Mixture
+        /// </summary>
+        public TestMixture TestMixture { get; set; }
+        
+        /// <summary>
         /// Test points
         /// </summary>
         public IList<ITestPoint> TestDataPoints { get; set; }
@@ -69,6 +74,7 @@ namespace Primusz.SoilGenius.Core.Model
             Standard = "MSZ EN 13286-47";
             TestSetting = new TestSetting();
             TestResults = new TestResults();
+            TestMixture = new TestMixture();
             TestDataPoints = new List<ITestPoint>();
         }
 

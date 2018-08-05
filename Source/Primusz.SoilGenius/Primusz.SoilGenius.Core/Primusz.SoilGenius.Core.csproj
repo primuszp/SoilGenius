@@ -50,7 +50,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IO\DataReader.cs" />
     <Compile Include="IO\MultiensayoReader.cs" />
-    <Compile Include="IO\XmlProjectReader.cs" />
+    <Compile Include="IO\XmlProject.cs" />
     <Compile Include="Model\TestSetting.cs" />
     <Compile Include="Model\TestResults.cs" />
     <Compile Include="Model\ControlStyleEnum.cs" />

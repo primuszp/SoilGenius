@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         private object activeViewModel;
         private readonly IEventAggregator aggregator;
+        private IList<CbrTestData> list = new List<CbrTestData>();
 
         #endregion
 
@@ -82,25 +84,30 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             //    }
             //}
 
-            XmlProjectReader reader = new XmlProjectReader();
-            var list = reader.Read(File.Open(@"DataSet/cbr_project.xml", FileMode.Open));
+            var project = new XmlProject();
+            list = project.Read(File.Open(@"DataSet/cbr_project.xml", FileMode.Open));
 
             var vm = ActiveViewModel as CbrTestPlotViewModel;
 
             foreach (var test in list)
             {
-                string path = Path.Combine("DataSet", test.File);
+                var path = Path.Combine("DataSet", test.File);
                 test.LoadTestFile(File.Open(path, FileMode.Open));
 
                 vm?.Tests.Add(new CbrTestDataViewModel(test, aggregator));
             }
         }
 
-        //public void SaveTestData()
-        //{
-        //    CbrTestViewModel vm = ActiveViewModel as CbrTestViewModel;
-        //    vm?.Save(@"X:\CBR\cbr1.dxf");
-        //}
+        public void SaveTestData()
+        {
+            if (ActiveViewModel is CbrTestPlotViewModel vm)
+            {
+                var project = new XmlProject();
+                var stream = File.Create(@"DataSet/test_project.xml");
+
+                project.Write(stream, list);
+            }
+        }
 
         protected override void OnInitialize()
         {

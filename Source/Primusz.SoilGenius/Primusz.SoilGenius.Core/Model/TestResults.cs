@@ -2,17 +2,17 @@
 {
     public class TestResults
     {
-        public double F25 { get; set; }
+        public double Force1 { get; set; }
 
-        public double F50 { get; set; }
-
-        public double Slope { get; set; }
-
-        public double Intercept { get; set; }
+        public double Force2 { get; set; }
 
         public double SplineRho { get; set; }
 
         public double SplineNodes { get; set; }
+
+        public double Slope { get; set; }
+
+        public double Intercept { get; set; }
 
         public TestResults()
         {

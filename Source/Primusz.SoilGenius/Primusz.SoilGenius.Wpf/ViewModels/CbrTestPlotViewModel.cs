@@ -240,8 +240,8 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                         LineSeries.Points.Add(new DataPoint(i, spline.Calculation(i)));
                     }
 
-                    SelectedTest.Force25 = Math.Round(spline.Calculation(SelectedTest.ZeroPoint + 2.5), 2);
-                    SelectedTest.Force50 = Math.Round(spline.Calculation(SelectedTest.ZeroPoint + 5.0), 2);
+                    SelectedTest.Force1 = Math.Round(spline.Calculation(SelectedTest.ZeroPoint + 2.5), 2);
+                    SelectedTest.Force2 = Math.Round(spline.Calculation(SelectedTest.ZeroPoint + 5.0), 2);
 
                     if (invalidatePlot)
                     {
@@ -268,11 +268,11 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
         private void RenderTextAnnotation(bool invalidatePlot = false)
         {
-            TextAnnotation1.TextPosition = new DataPoint(2.5 + SelectedTest.ZeroPoint, SelectedTest.Force25);
-            TextAnnotation1.Text = $"{selectedTest.Force25:0.00} kN";
+            TextAnnotation1.TextPosition = new DataPoint(2.5 + SelectedTest.ZeroPoint, SelectedTest.Force1);
+            TextAnnotation1.Text = $"{selectedTest.Force1:0.00} kN";
 
-            TextAnnotation2.TextPosition = new DataPoint(5.0 + SelectedTest.ZeroPoint, SelectedTest.Force50);
-            TextAnnotation2.Text = $"{selectedTest.Force50:0.00} kN";
+            TextAnnotation2.TextPosition = new DataPoint(5.0 + SelectedTest.ZeroPoint, SelectedTest.Force2);
+            TextAnnotation2.Text = $"{selectedTest.Force2:0.00} kN";
 
             SetAnnotationVisibility(TextAnnotation1, true);
             SetAnnotationVisibility(TextAnnotation2, true);

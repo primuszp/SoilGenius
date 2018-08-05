@@ -11,6 +11,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         #region Members
 
         private bool adjustZeroPoint;
+        private double calcLineSlope;
         private readonly CbrTestData testData;
         private readonly IEventAggregator eventAggregator;
 
@@ -76,23 +77,23 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             }
         }
 
-        public double Force25
+        public double Force1
         {
-            get => testData.TestResults.F25;
+            get => testData.TestResults.Force1;
             set
             {
-                testData.TestResults.F25 = value;
-                NotifyOfPropertyChange(() => Force25);
+                testData.TestResults.Force1 = value;
+                NotifyOfPropertyChange(() => Force1);
             }
         }
 
-        public double Force50
+        public double Force2
         {
-            get => testData.TestResults.F50;
+            get => testData.TestResults.Force2;
             set
             {
-                testData.TestResults.F50 = value;
-                NotifyOfPropertyChange(() => Force50);
+                testData.TestResults.Force2 = value;
+                NotifyOfPropertyChange(() => Force2);
             }
         }
 
@@ -123,6 +124,12 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             this.testData = testData;
             this.eventAggregator = eventAggregator;
 
+            if (Math.Abs(testData.TestResults.Slope) > double.Epsilon && 
+                Math.Abs(testData.TestResults.Intercept) > double.Epsilon)
+            {
+                AdjustZeroPoint = true;
+            }
+
             FillSlopeRangeFromDataPoints();
         }
 
@@ -147,7 +154,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 sum += result;
             }
 
-            Slope = sum / (testData.TestDataPoints.Count - 1);
+            calcLineSlope = sum / (testData.TestDataPoints.Count - 1);
 
             MinSlope = min;
             MaxSlope = max;
@@ -165,8 +172,22 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                     case "Intercept":
                     case "SplineRho":
                     case "SplineNodes":
+                        eventAggregator.PublishOnUIThread(PlotMessages.InvalidatePlot);
+                        break;
                     case "AdjustZeroPoint":
                         {
+                            if (AdjustZeroPoint)
+                            {
+                                if (Math.Abs(Slope) < double.Epsilon)
+                                {
+                                    Slope = calcLineSlope;
+                                }
+                            }
+                            else
+                            {
+                                Slope = 0;
+                                Intercept = 0;
+                            }
                             eventAggregator.PublishOnUIThread(PlotMessages.InvalidatePlot);
                         }
                         break;
