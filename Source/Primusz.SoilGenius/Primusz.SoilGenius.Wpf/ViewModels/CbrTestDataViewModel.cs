@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Caliburn.Micro;
 using Primusz.SoilGenius.Core.Model;
+using Primusz.SoilGenius.Core.Abstractions;
 using Primusz.SoilGenius.Wpf.Messages;
 
 namespace Primusz.SoilGenius.Wpf.ViewModels
@@ -10,7 +11,6 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
     {
         #region Members
 
-        private bool adjustZeroPoint;
         private double calcLineSlope;
         private readonly CbrTestData testData;
         private readonly IEventAggregator eventAggregator;
@@ -49,7 +49,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         {
             get
             {
-                if (AdjustZeroPoint)
+                if (IsCorrected)
                 {
                     return -Intercept / Slope;
                 }
@@ -97,16 +97,16 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             }
         }
 
-        public Boolean AdjustZeroPoint
+        public Boolean IsCorrected
         {
-            get => adjustZeroPoint;
+            get => testData.TestResults.IsCorrected;
             set
             {
-                if (value != adjustZeroPoint)
+                if (value != testData.TestResults.IsCorrected)
                 {
-                    adjustZeroPoint = value;
+                    testData.TestResults.IsCorrected = value;
                     NotifyOfPropertyChange(() => ZeroPoint);
-                    NotifyOfPropertyChange(() => AdjustZeroPoint);
+                    NotifyOfPropertyChange(() => IsCorrected);
                 }
             }
         }
@@ -123,12 +123,6 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
         {
             this.testData = testData;
             this.eventAggregator = eventAggregator;
-
-            if (Math.Abs(testData.TestResults.Slope) > double.Epsilon && 
-                Math.Abs(testData.TestResults.Intercept) > double.Epsilon)
-            {
-                AdjustZeroPoint = true;
-            }
 
             FillSlopeRangeFromDataPoints();
         }
@@ -174,9 +168,9 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                     case "SplineNodes":
                         eventAggregator.PublishOnUIThread(PlotMessages.InvalidatePlot);
                         break;
-                    case "AdjustZeroPoint":
+                    case "IsCorrected":
                         {
-                            if (AdjustZeroPoint)
+                            if (IsCorrected)
                             {
                                 if (Math.Abs(Slope) < double.Epsilon)
                                 {
@@ -185,8 +179,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                             }
                             else
                             {
-                                Slope = 0;
-                                Intercept = 0;
+                                Slope = Intercept = 0;
                             }
                             eventAggregator.PublishOnUIThread(PlotMessages.InvalidatePlot);
                         }

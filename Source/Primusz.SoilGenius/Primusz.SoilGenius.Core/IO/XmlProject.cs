@@ -53,8 +53,11 @@ namespace Primusz.SoilGenius.Core.IO
                 xmixture.SetAttributeValue("Age", $"{test.TestMixture.Age}h");
 
                 var xresults = new XElement("TestResults");
+
                 xresults.SetAttributeValue("Force1", $"{test.TestResults.Force1:0.00}kN");
                 xresults.SetAttributeValue("Force2", $"{test.TestResults.Force2:0.00}kN");
+
+                xresults.SetAttributeValue("IsCorrected", test.TestResults.IsCorrected);
 
                 xresults.SetAttributeValue("Slope", $"{test.TestResults.Slope:0.00}");
                 xresults.SetAttributeValue("Intercept", $"{test.TestResults.Intercept:0.00}");
@@ -71,7 +74,7 @@ namespace Primusz.SoilGenius.Core.IO
             xdoc.Save(stream);
         }
 
-        public IList<CbrTestData> Read(Stream stream)
+        public List<CbrTestData> Read(Stream stream)
         {
             var xdoc = XDocument.Load(stream);
             var list = new List<CbrTestData>();
@@ -128,6 +131,7 @@ namespace Primusz.SoilGenius.Core.IO
                                 var intercept = xitem.Attribute("Intercept")?.Value;
                                 var splineRho = xitem.Attribute("Rho")?.Value;
                                 var splineNodes = xitem.Attribute("Nodes")?.Value;
+                                var isCorrected = xitem.Attribute("IsCorrected")?.Value;
 
                                 if (force1 != null)
                                     test.TestResults.Force1 = force1.Replace("kN", string.Empty).ToDouble();
@@ -146,6 +150,9 @@ namespace Primusz.SoilGenius.Core.IO
 
                                 if (splineNodes != null)
                                     test.TestResults.SplineNodes = splineNodes.ToDouble();
+
+                                if (isCorrected != null)
+                                    test.TestResults.IsCorrected = bool.Parse(isCorrected);
                             }
                         }
 

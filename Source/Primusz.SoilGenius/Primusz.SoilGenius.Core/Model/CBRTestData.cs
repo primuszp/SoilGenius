@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using Primusz.SoilGenius.Core.Abstractions;
 using Primusz.SoilGenius.Core.IO;
 using Primusz.SoilGenius.Core.Extensions;
 

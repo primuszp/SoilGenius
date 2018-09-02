@@ -18,7 +18,7 @@
                 <StackPanel>
                     <Border Background="{StaticResource NormalBrush}" Padding="5">
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox x:Name="CheckBox" IsChecked="{Binding SelectedTest.AdjustZeroPoint, Mode=TwoWay}"
+                            <CheckBox x:Name="CheckBox" IsChecked="{Binding SelectedTest.IsCorrected, Mode=TwoWay}"
                                       Content="Zéró pont korrekció:" FontSize="14" Foreground="White" FontWeight="Bold" VerticalContentAlignment="Center"/>
                             <TextBlock Text="{Binding SelectedTest.ZeroPoint, StringFormat={}{0:0.00}}" 
                                        Margin="5,0,0,0" FontSize="14" Foreground="White" VerticalAlignment="Center"/>
@@ -100,14 +100,15 @@
 
             <Border DockPanel.Dock="Top" Margin="0 0 0 10"
                     BorderThickness="2" BorderBrush="{StaticResource ListBorder}" Padding="2 5 2 5" CornerRadius="5">
-                <StackPanel>
-                    <Border Background="{StaticResource NormalBrush}" Padding="5" Margin="3 0 3 0">
+                <DockPanel>
+                    <Border Background="{StaticResource NormalBrush}" Padding="5" Margin="3 0 3 0" DockPanel.Dock="Top">
                         <TextBlock Text="Vizsgálatok" FontSize="14" Foreground="White" FontWeight="Bold"/>
                     </Border>
                     <ListBox ItemsSource="{Binding Tests, Mode=OneWay}" SelectedItem="{Binding SelectedTest, Mode=TwoWay}"
-                             DisplayMemberPath="DisplayName" BorderThickness="0">
+                             DisplayMemberPath="DisplayName" BorderThickness="0"
+                             DockPanel.Dock="Top" Margin="0 0 2 0">
                     </ListBox>
-                </StackPanel>
+                </DockPanel>
             </Border>
         </DockPanel>
 

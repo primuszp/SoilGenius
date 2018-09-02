@@ -1,4 +1,6 @@
-﻿namespace Primusz.SoilGenius.Core.Model
+﻿using System;
+
+namespace Primusz.SoilGenius.Core.Model
 {
     public class TestResults
     {
@@ -14,10 +16,15 @@
 
         public double Intercept { get; set; }
 
+        public Boolean IsCorrected { get; set; }
+
         public TestResults()
         {
+            Slope = 0.0;
+            Intercept = 0.0d;
             SplineRho = 2.0d;
             SplineNodes = 50;
+            IsCorrected = false;
         }
     }
 }

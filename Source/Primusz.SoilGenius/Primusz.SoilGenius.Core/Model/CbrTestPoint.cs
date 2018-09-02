@@ -1,4 +1,6 @@
-﻿namespace Primusz.SoilGenius.Core.Model
+﻿using Primusz.SoilGenius.Core.Abstractions;
+
+namespace Primusz.SoilGenius.Core.Model
 {
     public class CbrTestPoint : ITestPoint
     {

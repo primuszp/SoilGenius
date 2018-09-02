@@ -235,6 +235,8 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                     LineSeries.Points.Clear();
                     LineSeries.Color = OxyColors.Green;
 
+                    if (maximum < 7.0) maximum = 7.0;
+
                     for (double i = 0; i <= maximum; i += 0.05d)
                     {
                         LineSeries.Points.Add(new DataPoint(i, spline.Calculation(i)));
@@ -288,7 +290,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
             LineAnnotation.Slope = SelectedTest.Slope;
             LineAnnotation.Intercept = SelectedTest.Intercept;
 
-            SetAnnotationVisibility(LineAnnotation, SelectedTest.AdjustZeroPoint);
+            SetAnnotationVisibility(LineAnnotation, SelectedTest.IsCorrected);
 
             if (invalidatePlot)
             {

@@ -1,4 +1,4 @@
-﻿namespace Primusz.SoilGenius.Core.Model
+﻿namespace Primusz.SoilGenius.Core.Abstractions
 {
     public interface ITestPoint
     {
