@@ -7,7 +7,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Fájl">
                 <MenuItem Header="_Importálás" cal:Message.Attach="ImportTestData()" />
-                <MenuItem Header="_Exportálás" cal:Message.Attach="ExportTestData()" />
+                <MenuItem Header="_Exportálás" cal:Message.Attach="ExportTestData2()" />
                 <Separator/>
                 <MenuItem Header="_Megnyítás" cal:Message.Attach="LoadTestData()"  />
                 <MenuItem Header="_Mentés" cal:Message.Attach="SaveTestData()" />

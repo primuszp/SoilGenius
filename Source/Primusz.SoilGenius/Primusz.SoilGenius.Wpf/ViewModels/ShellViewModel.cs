@@ -16,7 +16,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
     {
         #region Members
 
-        private string soilName = "bánokszentgyörgy_uncorrected";
+        private string soilName = "untreated_corrected";
         private object activeViewModel;
         private readonly IEventAggregator aggregator;
         private List<CbrTestData> list = new List<CbrTestData>();
@@ -164,10 +164,10 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                     var project = new XmlProject();
                     var stream = File.Create(path);
 
-                    list = list.OrderBy(x => x.TestMixture.BinderContent)
-                        .ThenBy(x => x.TestMixture.Age)
-                        .ThenBy(x => x.TestMixture.MoistureContent)
-                        .ToList();
+                    //list = list.OrderBy(x => x.TestMixture.BinderContent)
+                    //    .ThenBy(x => x.TestMixture.Age)
+                    //    .ThenBy(x => x.TestMixture.MoistureContent)
+                    //    .ToList();
 
                     project.Write(stream, list);
                 }
@@ -209,6 +209,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
 
             foreach (var item in list)
             {
+                var c = item.Name;
                 var b = item.TestMixture.BinderContent.ToString("0");
                 var m = item.TestMixture.MoistureContent.ToString("0.0");
                 var a = item.TestMixture.Age.ToString("0");
@@ -216,7 +217,7 @@ namespace Primusz.SoilGenius.Wpf.ViewModels
                 var f1 = item.TestResults.Force1.ToString("0.00");
                 var f2 = item.TestResults.Force2.ToString("0.00");
 
-                var line = b + "\t" + m + "\t" + a + "\t" + f1 + "\t" + f2 + "\t";
+                var line = c + "\t" + b + "\t" + m + "\t" + a + "\t" + f1 + "\t" + f2 + "\t";
 
                 lines.Add(line);
             }
